@@ -6,4 +6,4 @@ if [ -n "$GITHUB_TOKEN" ]; then
     composer config --global github-oauth.github.com "$GITHUB_TOKEN"
 fi
 
-exec satis build /satis/satis.json /output
+exec php /satis/bin/satis build /satis/satis.json /output

@@ -8,6 +8,6 @@ fi
 
 # Run initial build (non-fatal — container starts even if build fails)
 echo "Running initial Satis build..."
-satis build /satis/satis.json /output || echo "Initial build failed — will retry via webhook"
+php /satis/bin/satis build /satis/satis.json /output || echo "Initial build failed — will retry via webhook"
 
 exec "$@"

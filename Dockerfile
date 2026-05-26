@@ -1,3 +1,5 @@
+FROM composer/satis:latest AS satis-src
+
 FROM php:8.2-fpm-alpine
 
 RUN apk add --no-cache git zip unzip curl bash openssh-client libzip-dev && \
@@ -5,12 +7,11 @@ RUN apk add --no-cache git zip unzip curl bash openssh-client libzip-dev && \
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Install satis globally with a fixed home so it's accessible at runtime
-ENV COMPOSER_HOME=/usr/local/composer
-ENV COMPOSER_MEMORY_LIMIT=-1
-RUN mkdir -p /usr/local/composer && \
-    composer global require composer/satis --no-interaction && \
-    ln -s /usr/local/composer/vendor/bin/satis /usr/local/bin/satis
+# Pull satis from the official image — no composer install needed
+COPY --from=satis-src /satis /satis
+RUN ln -s /satis/bin/satis /usr/local/bin/satis
+
+ENV COMPOSER_HOME=/root/.composer
 
 WORKDIR /satis
 
