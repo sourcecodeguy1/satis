@@ -1,12 +1,15 @@
 FROM php:8.2-fpm-alpine
 
-RUN apk add --no-cache git zip unzip curl bash openssh-client
+RUN apk add --no-cache git zip unzip curl bash openssh-client libzip-dev && \
+    docker-php-ext-install zip
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 # Install satis globally with a fixed home so it's accessible at runtime
 ENV COMPOSER_HOME=/usr/local/composer
-RUN composer global require composer/satis --no-interaction && \
+ENV COMPOSER_MEMORY_LIMIT=-1
+RUN mkdir -p /usr/local/composer && \
+    composer global require composer/satis --no-interaction && \
     ln -s /usr/local/composer/vendor/bin/satis /usr/local/bin/satis
 
 WORKDIR /satis
