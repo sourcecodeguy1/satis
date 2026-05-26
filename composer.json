@@ -1,0 +1,22 @@
+{
+    "name": "juliowebmaster/satis",
+    "description": "Private Composer registry — Satis with GitHub webhook auto-rebuild",
+    "type": "project",
+    "license": "MIT",
+    "require": {
+        "php": "^8.4"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^11.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Juliowebmaster\\Satis\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Juliowebmaster\\Satis\\Tests\\": "tests/"
+        }
+    }
+}

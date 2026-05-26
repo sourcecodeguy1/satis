@@ -13,11 +13,15 @@ RUN ln -s /satis/bin/satis /usr/local/bin/satis
 
 ENV COMPOSER_HOME=/root/.composer
 
-WORKDIR /satis
+WORKDIR /app
 
-RUN mkdir -p /output && chown -R www-data:www-data /output /satis
+COPY composer.json /app/composer.json
+RUN composer install --no-dev --no-interaction --prefer-dist
+
+RUN mkdir -p /output /satis && chown -R www-data:www-data /output /satis
 
 COPY satis.json /satis/satis.json
+COPY src/ /app/src/
 COPY webhook/ /var/www/html/
 COPY scripts/build.sh /usr/local/bin/satis-build
 COPY scripts/entrypoint.sh /usr/local/bin/entrypoint.sh

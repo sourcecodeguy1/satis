@@ -1,33 +1,23 @@
 <?php
 
+require_once __DIR__ . '/../vendor/autoload.php';
+
+use Juliowebmaster\Satis\WebhookHandler;
+
 header('Content-Type: application/json');
 
-$secret  = getenv('GITHUB_WEBHOOK_SECRET');
-$payload = file_get_contents('php://input');
-
-// Validate GitHub signature
+$handler  = new WebhookHandler(getenv('GITHUB_WEBHOOK_SECRET') ?: '');
+$payload  = file_get_contents('php://input');
 $signature = $_SERVER['HTTP_X_HUB_SIGNATURE_256'] ?? '';
-if (empty($secret) || !hash_equals('sha256=' . hash_hmac('sha256', $payload, $secret), $signature)) {
-    http_response_code(403);
-    echo json_encode(['error' => 'Invalid signature']);
-    exit;
+$event    = $_SERVER['HTTP_X_GITHUB_EVENT'] ?? '';
+
+$response = $handler->handle($payload, $signature, $event);
+
+http_response_code($response->status);
+
+if ($response->status === 200 && $response->body['message'] === 'Build triggered') {
+    $token  = escapeshellarg(getenv('GITHUB_TOKEN') ?: '');
+    exec("GITHUB_TOKEN={$token} satis-build > /tmp/satis-build.log 2>&1 &");
 }
 
-$event = $_SERVER['HTTP_X_GITHUB_EVENT'] ?? '';
-
-// Only rebuild on push or release events
-if (!in_array($event, ['push', 'release', 'create'], true)) {
-    echo json_encode(['message' => 'Event ignored: ' . $event]);
-    exit;
-}
-
-// Write a trigger file — the build runs as a background process
-$logFile = '/tmp/satis-build.log';
-$cmd = sprintf(
-    'GITHUB_TOKEN=%s satis-build > %s 2>&1 &',
-    escapeshellarg(getenv('GITHUB_TOKEN') ?: ''),
-    $logFile
-);
-exec($cmd);
-
-echo json_encode(['message' => 'Build triggered', 'event' => $event]);
+echo $response->toJson();
