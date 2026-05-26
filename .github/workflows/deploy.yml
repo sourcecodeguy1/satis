@@ -43,7 +43,6 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.SERVER_USERNAME }}
           key: ${{ secrets.SERVER_SSH_KEY }}
-          script_stop: true
           script: |
             cd ${{ secrets.DIRECTORY }}
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/satis:latest
