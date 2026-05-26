@@ -60,5 +60,6 @@ jobs:
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/satis:latest
             docker compose up -d --force-recreate satis
             docker compose up -d satis-nginx
+            docker images ${{ secrets.DOCKERHUB_USERNAME }}/satis --format '{{.Tag}}' | grep -v latest | sort -r | tail -n +3 | xargs -r -I {} docker rmi ${{ secrets.DOCKERHUB_USERNAME }}/satis:{}
             docker image prune -f
             echo "Satis deployed ✅"
