@@ -11,14 +11,15 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 COPY --from=satis-src /satis /satis
 RUN ln -s /satis/bin/satis /usr/local/bin/satis
 
-ENV COMPOSER_HOME=/root/.composer
+ENV COMPOSER_HOME=/var/www/.composer
 
 WORKDIR /app
 
 COPY composer.json /app/composer.json
 RUN composer install --no-dev --no-interaction --prefer-dist
 
-RUN mkdir -p /output /satis && chown -R www-data:www-data /output /satis
+RUN mkdir -p /output /satis /var/www/.composer && \
+    chown -R www-data:www-data /output /satis /var/www/.composer
 
 COPY satis.json /satis/satis.json
 COPY src/ /app/src/
