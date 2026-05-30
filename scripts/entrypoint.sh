@@ -10,4 +10,7 @@ fi
 echo "Running initial Satis build..."
 php /satis/bin/satis build /satis/satis.json /output || echo "Initial build failed — will retry via webhook"
 
+# Ensure www-data can write to all directories for webhook-triggered rebuilds
+chown -R www-data:www-data /output /var/www/.composer
+
 exec "$@"
