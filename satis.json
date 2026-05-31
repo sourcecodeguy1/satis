@@ -1,12 +1,7 @@
 {
     "name": "juliowebmaster/satis",
     "homepage": "https://composer.juliowebmaster.com",
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/sourcecodeguy1/laravel-mcp-server"
-        }
-    ],
+    "repositories": [],
     "require-all": true,
     "output-html": true,
     "archive": {
